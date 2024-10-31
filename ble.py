@@ -1,47 +1,37 @@
 import os
 import time
-import tkinter as tk
-from tkinter import messagebox
+import subprocess
+
+def clear_terminal():
+    if os.name == 'nt':  # For Windows
+        _ = os.system('cls')
+    else:  # For Unix/Linux/macOS
+        _ = os.system('clear')
 
 def print_progress_bar(progress, total, color="red"):
     percent = 100 * (progress / float(total))
-    progress_bar['value'] = percent
-    window.update_idletasks()
+    bar_length = 20
+    filled_length = int(bar_length * percent / 100)
+    bar = '█' * filled_length + '-' * (bar_length - filled_length)
+    print(f"\rProgress: [{bar}] {percent:.1f}%", end="", flush=True)
 
 def spam_message():
-    device = device_entry.get()
-    message = message_entry.get()
-    count = int(count_entry.get())
+    device = input("Enter the device (MAC address): ")
+    message = input("Enter the message: ")
+    count = int(input("Enter the count: "))
 
-    messagebox.showwarning("Disclaimer", "This script is for educational purposes only. Use responsibly.")
-    
-    messagebox.showinfo("Spamming...", f"Sending '{message}' to {device} {count} times...")
+    print("Disclaimer: This script is for educational purposes only. Use responsibly.")
+    input("Press Enter to continue...")
+    clear_terminal()
+
+    print(f"Sending '{message}' to {device} {count} times...")
 
     for i in range(count):
-        os.system(f"termux-bluetooth-send --device='{device}' --file='/storage/emulated/0/Download/{message}.txt'")
+        subprocess.run(["termux-bluetooth-send", f"--device='{device}'", f"--file='/storage/emulated/0/Download/{message}.txt'"])
         print_progress_bar(i + 1, count)
-        time.sleep(0.5)  # Delay between messages
+        time.sleep(0.5)
     
-    messagebox.showinfo("Done", "Spamming completed!")
+    print("\nSpamming completed!")
 
-window = tk.Tk()
-window.title("Spam Script")
-
-tk.Label(window, text="Device (MAC address):").pack()
-device_entry = tk.Entry(window)
-device_entry.pack()
-
-tk.Label(window, text="Message:").pack()
-message_entry = tk.Entry(window)
-message_entry.pack()
-
-tk.Label(window, text="Count:").pack()
-count_entry = tk.Entry(window)
-count_entry.pack()
-
-tk.Button(window, text="Start Spamming", command=spam_message).pack()
-
-progress_bar = tk.Progressbar(window, length=200, mode='determinate')
-progress_bar.pack()
-
-window.mainloop()
+clear_terminal()
+spam_message()
