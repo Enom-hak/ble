@@ -18,7 +18,7 @@ def spam_message():
     messagebox.showinfo("Spamming...", f"Sending '{message}' to {device} {count} times...")
 
     for i in range(count):
-        os.system(f"echo '{message}' | festival --tts")
+        os.system(f"termux-bluetooth-send --device='{device}' --file='/storage/emulated/0/Download/{message}.txt'")
         print_progress_bar(i + 1, count)
         time.sleep(0.5)  # Delay between messages
     
@@ -27,7 +27,7 @@ def spam_message():
 window = tk.Tk()
 window.title("Spam Script")
 
-tk.Label(window, text="Device:").pack()
+tk.Label(window, text="Device (MAC address):").pack()
 device_entry = tk.Entry(window)
 device_entry.pack()
 
