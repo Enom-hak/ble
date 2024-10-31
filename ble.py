@@ -1,33 +1,47 @@
 import os
-import sys
 import time
+import tkinter as tk
+from tkinter import messagebox
 
-def print_disclaimer():
-    os.system('clear' if os.name == 'posix' else 'cls')
-    print("\033[1;31;40mDisclaimer: This script is for educational purposes only. Use responsibly.\033[0;37;40m")
-
-def print_progress_bar(progress, total, color="\033[1;31;40m"):
+def print_progress_bar(progress, total, color="red"):
     percent = 100 * (progress / float(total))
-    bar = '█' * int(percent) + '-' * (100 - int(percent))
-    print(color + f"\r|{bar}| {percent:.2f}%", end="\r")
-    if progress == total:
-        print("\033[0;37;40m")  # Reset color
+    progress_bar['value'] = percent
+    window.update_idletasks()
 
-def spam_message(device, message, count):
-    print_disclaimer()
-    print(f"Sending '{message}' to {device} {count} times...")
+def spam_message():
+    device = device_entry.get()
+    message = message_entry.get()
+    count = int(count_entry.get())
+
+    messagebox.showwarning("Disclaimer", "This script is for educational purposes only. Use responsibly.")
+    
+    messagebox.showinfo("Spamming...", f"Sending '{message}' to {device} {count} times...")
+
     for i in range(count):
         os.system(f"echo '{message}' | festival --tts")
         print_progress_bar(i + 1, count)
         time.sleep(0.5)  # Delay between messages
+    
+    messagebox.showinfo("Done", "Spamming completed!")
 
-if __name__ == "__main__":
-    if len(sys.argv) != 4:
-        print("Usage: python3 spam_script.py <device> <message> <count>")
-        sys.exit(1)
+window = tk.Tk()
+window.title("Spam Script")
 
-    device = sys.argv[1]
-    message = sys.argv[2]
-    count = int(sys.argv[3])
+tk.Label(window, text="Device:").pack()
+device_entry = tk.Entry(window)
+device_entry.pack()
 
-    spam_message(device, message, count)
+tk.Label(window, text="Message:").pack()
+message_entry = tk.Entry(window)
+message_entry.pack()
+
+tk.Label(window, text="Count:").pack()
+count_entry = tk.Entry(window)
+count_entry.pack()
+
+tk.Button(window, text="Start Spamming", command=spam_message).pack()
+
+progress_bar = tk.Progressbar(window, length=200, mode='determinate')
+progress_bar.pack()
+
+window.mainloop()
