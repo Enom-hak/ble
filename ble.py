@@ -16,6 +16,15 @@ def print_progress_bar(progress, total, color="red"):
     print(f"\rProgress: [{bar}] {percent:.1f}%", end="", flush=True)
 
 def spam_message():
+    import bluetooth
+
+# Perform Bluetooth discovery
+nearby_devices = bluetooth.discover_devices(lookup_names=True)
+
+# Print the MAC addresses of discovered devices
+for addr, name in nearby_devices:
+    print(f"Device Name: {name}, MAC Address: {addr}")
+    
     device = input("Enter the device (MAC address): ")
     message = input("Enter the message: ")
     count = int(input("Enter the count: "))
