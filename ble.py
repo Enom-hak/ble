@@ -13,23 +13,20 @@ def print_progress_bar(progress, total):
     print(f"\rProgress: [{bar}] {percent:.1f}%", end="", flush=True)
 
 def scan_devices():
-    print("Scanning for nearby Bluetooth devices...")
+    print("Retrieving paired Bluetooth devices...")
     try:
-        result = subprocess.run(["termux-bluetooth-scan"], capture_output=True, text=True, check=True)
+        result = subprocess.run(["termux-bluetooth-list"], capture_output=True, text=True, check=True)
     except subprocess.CalledProcessError as e:
-        print(f"Error scanning for devices: {e}")
+        print(f"Error retrieving devices: {e}")
         return None
 
     devices = []
-    address = None
-
     for line in result.stdout.splitlines():
         if "Address" in line:
-            address = line.split(": ")[1]
-        elif "Name" in line and address:
-            name = line.split(": ")[1]
+            address = line.split(": ")[1].strip()
+        elif "Name" in line:
+            name = line.split(": ")[1].strip()
             devices.append((name, address))
-            address = None  # Reset address after pairing with name
 
     if not devices:
         print("No devices found.")
@@ -38,7 +35,7 @@ def scan_devices():
     print("\nFound devices:")
     for i, (name, address) in enumerate(devices, start=1):
         print(f"{i}. {name} - {address}")
-    
+
     while True:
         try:
             choice = int(input("Select a device by number: "))
@@ -66,13 +63,13 @@ def spam_message():
 
     for i in range(count):
         try:
-            subprocess.run(["termux-bluetooth-send", f"--device={device}", f"--file=/storage/emulated/0/Download/{message}.txt"], check=True)
+            subprocess.run(["termux-bluetooth-send", "--device", device, "--file", f"/storage/emulated/0/Download/{message}.txt"], check=True)
         except subprocess.CalledProcessError as e:
             print(f"Error sending message: {e}")
             break
         print_progress_bar(i + 1, count)
         time.sleep(0.5)
-    
+
     print("\nSpamming completed!")
 
 clear_terminal()
